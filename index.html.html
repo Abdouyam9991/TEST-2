@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+    <!-- إعدادات لتحويل الموقع إلى تطبيق -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="بطاقتي">
+    <meta name="mobile-web-app-capable" content="yes">
+
+    <!-- أيقونة الشاشة الرئيسية -->
+    <link rel="apple-touch-icon" href="icon.jpg.jpg">
+    <link rel="icon" type="image/png" sizes="512x512" href="icon.jpg.jpg">
+
+    <title>بطاقة الطالب - Portail Etudiant</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            overflow-y: auto;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        /* 🔹 الخلفية تتحرك (scroll) */
+        body {
+            font-family: Arial, sans-serif;
+            background: url('bitakati.jpg.JPG') no-repeat center center;
+            background-size: cover;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .card-container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 20px 20px 30px;
+            position: relative;
+        }
+
+        .home-page {
+            display: none;
+            width: 600px;
+            height: 900px;
+            max-width: 100%;
+            max-height: 90vh;
+        }
+
+        .home-page.active { display: block; }
+
+        .home-page img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 30px;
+        }
+
+        .card-wrapper {
+            background: none;
+            display: none;
+            position: relative;
+            width: 500px;
+            height: 595px;
+            max-width: 100%;
+            max-height: 90vh;
+            touch-action: pan-y;
+            perspective: 2000px;
+        }
+
+        .card-wrapper.active { display: block; }
+
+        .card {
+            width: 100%;
+            height: 100%;
+            background-color: #FBFCFD;
+            border-radius: 20px;
+            position: absolute;
+            transition: transform 0.6s ease;
+            transform-style: preserve-3d;
+            backface-visibility: hidden;
+        }
+
+        .card.front { z-index: 2; }
+        .card.back { z-index: 1; transform: rotateY(180deg); }
+
+        .card img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 30px;
+        }
+
+        .profile-page {
+            display: none;
+            width: 995px;
+            height: 1687px;
+            max-width: 100%;
+            max-height: 90vh;
+            border-radius: 30px;
+            padding: 20px;
+            overflow-y: auto;
+            background: rgba(255, 255, 255, 0.8);
+        }
+
+        .profile-page.active {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: start;
+        }
+
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            background: #0aa75d;
+            border-radius: 50%;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .profile-icon {
+            width: 60px;
+            height: 60px;
+            stroke: white;
+            fill: none;
+            stroke-width: 2;
+        }
+
+        .profile-info { text-align: center; color: #1e293b; }
+        .profile-details { font-size: 20px; color: #64748b; margin-bottom: 30px; }
+
+        .profile-menu {
+            width: 100%;
+            max-width: 450px;
+        }
+
+        .profile-menu-item {
+            background: white;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .bottom-nav {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            padding: 15px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            border-radius: 30px 30px 0 0;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            padding: 15px 40px;
+            border-radius: 7px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-item.active { background: #0aa75d; }
+        .nav-item:hover { background: rgba(16, 185, 129, 0.3); }
+
+        .nav-icon {
+            width: 24px;
+            height: 24px;
+            stroke: white;
+            fill: none;
+            stroke-width: 2;
+        }
+
+        .nav-text { color: white; font-size: 12px; }
+    </style>
+</head>
+
+<body>
+    <div class="card-container">
+        <div class="home-page active" id="homePage">
+            <img src="home.jpg.jpg" alt="الصفحة الرئيسية">
+        </div>
+
+        <div class="card-wrapper" id="cardWrapper">
+            <div class="card front" id="frontCard">
+                <img src="front.jpg.JPG" alt="بطاقة الطالب - الوجه الأمامي">
+            </div>
+            <div class="card back" id="backCard">
+                <img src="back.jpg.JPG" alt="بطاقة الطالب - الوجه الخلفي">
+            </div>
+        </div>
+
+        <div class="profile-page" id="profilePage">
+            <div class="profile-avatar">
+                <svg class="profile-icon" viewBox="0 0 24 24">
+                    <circle cx="12" cy="7" r="4"></circle>
+                    <path d="M5.5 21a6.5 6.5 0 0 1 13 0"></path>
+                </svg>
+            </div>
+            <div class="profile-info">
+                <div class="profile-name">حسابي</div>
+                <div class="profile-details">معلومات الطالب</div>
+            </div>
+            <div class="profile-menu">
+                <div class="profile-menu-item">المعلومات الشخصية</div>
+                <div class="profile-menu-item">الإعدادات</div>
+                <div class="profile-menu-item">المساعدة والدعم</div>
+                <div class="profile-menu-item">تسجيل الخروج</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="bottom-nav">
+        <div class="nav-item active" data-page="home">
+            <svg class="nav-icon" viewBox="0 0 24 24">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+            </svg>
+            <span class="nav-text">الرئيسية</span>
+        </div>
+
+        <div class="nav-item" data-page="cards">
+            <svg class="nav-icon" viewBox="0 0 24 24">
+                <rect x="3" y="4" width="18" height="16" rx="2"></rect>
+                <line x1="7" y1="8" x2="17" y2="8"></line>
+                <line x1="7" y1="12" x2="17" y2="12"></line>
+                <line x1="7" y1="16" x2="13" y2="16"></line>
+            </svg>
+            <span class="nav-text">بطاقاتي</span>
+        </div>
+
+        <div class="nav-item" data-page="profile">
+            <svg class="nav-icon" viewBox="0 0 24 24">
+                <circle cx="12" cy="7" r="4"></circle>
+                <path d="M5.5 21a6.5 6.5 0 0 1 13 0"></path>
+            </svg>
+            <span class="nav-text">حسابي</span>
+        </div>
+    </div>
+
+    <script>
+        const wrapper = document.getElementById('cardWrapper');
+        const frontCard = document.getElementById('frontCard');
+        const backCard = document.getElementById('backCard');
+        const homePage = document.getElementById('homePage');
+        const profilePage = document.getElementById('profilePage');
+        const navItems = document.querySelectorAll('.nav-item');
+
+        let startX = 0, currentX = 0, isDragging = false, isFlipped = false;
+
+        navItems.forEach((item) => {
+            item.addEventListener('click', () => {
+                const page = item.getAttribute('data-page');
+                navItems.forEach(nav => nav.classList.remove('active'));
+                item.classList.add('active');
+                homePage.classList.remove('active');
+                wrapper.classList.remove('active');
+                profilePage.classList.remove('active');
+
+                if (page === 'home') homePage.classList.add('active');
+                else if (page === 'cards') {
+                    wrapper.classList.add('active');
+                    frontCard.style.transform = "rotateY(0deg)";
+                    backCard.style.transform = "rotateY(180deg)";
+                    isFlipped = false;
+                } else if (page === 'profile') profilePage.classList.add('active');
+            });
+        });
+
+        function flipCard(direction) {
+            if (direction === 'forward') {
+                frontCard.style.transform = "rotateY(-180deg)";
+                backCard.style.transform = "rotateY(0deg)";
+                isFlipped = true;
+            } else {
+                frontCard.style.transform = "rotateY(0deg)";
+                backCard.style.transform = "rotateY(180deg)";
+                isFlipped = false;
+            }
+        }
+
+        wrapper.addEventListener('touchstart', (e) => { startX = e.touches[0].clientX; isDragging = true; });
+        wrapper.addEventListener('touchmove', (e) => { if (!isDragging) return; currentX = e.touches[0].clientX; });
+        wrapper.addEventListener('touchend', () => {
+            if (!isDragging) return;
+            isDragging = false;
+            const diffX = currentX - startX;
+            if (Math.abs(diffX) > 100) {
+                if (diffX < 0 && !isFlipped) flipCard('forward');
+                else if (diffX > 0 && isFlipped) flipCard('backward');
+            }
+            currentX = startX = 0;
+        });
+    </script>
+</body>
+</html>
